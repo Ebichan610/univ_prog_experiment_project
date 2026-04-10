@@ -1,0 +1,14 @@
+Department of Informatics
+ 
+After learning fundamental informatics knowledge and how to apply that knowledge, students receive practical education in the use and application of information. 
+This education includes not only information related to engineering, but also information about humans and society. 
+Please refer to the education policy of the Graduate School of Informatics and Engineering for the learning/teaching goals of this department.
+Students in their third year and later are divided into three separate programs where they are trained to become information technology innovators whose work will support a golden age of information technology. 
+
+Information Security Engineering Program
+
+This program involves education and research that gives students the safety enhancement techniques and the wide variety of system and service design and management skills they need to manage the threats to information resulted from our realization of an information society. 
+This program engages in education and research into the development and application of information security technology with the aim of delivering a safe society. 
+Students learn about using information technology as a foundation for developing and applying abundant and convenient information media. 
+Students are taught about networking, system-management, security technology, and other subjects. 
+Teaching materials include methods for assessing the safety of encryption and authentication technology; security system design methods; methods for designing, developing, and operating various networks; and methods for processing and managing multimedia information.
