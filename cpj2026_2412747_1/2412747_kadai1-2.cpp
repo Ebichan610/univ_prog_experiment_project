@@ -1,22 +1,24 @@
 #include <iostream>
 #include <fstream>
+#include <cerrno>
 using namespace std;
 
 int main()
 {
     //入力ファイル名の取得とファイルの読み込み
     char in_filename[256];
+    cout << "入力するファイル名は？\n";
     cin >> in_filename;
     ifstream fin(in_filename);
     if(!fin)
     {
         cerr << "ファイルがオープンできませんでした\n";
-        exit(EXIT_FAILURE);
+        exit(errno);
     }
     //ファイルは50行あり、1行あたり4項目ある
     int num = 50 * 4;
     int score[num];
-    int math_mean, eng_mean, jap_mean, sub_mean = 0;
+    int math_mean = 0, eng_mean = 0, jap_mean = 0, sub_mean = 0;
     //ファイルの数値をintの配列に格納
     for(int i = 0; i<num; i++)
        fin >> score[i];
@@ -38,6 +40,7 @@ int main()
     sub_mean /= 50;
     //出力ファイル名の取得と生成
     char out_filename[256];
+    cout << "出力するファイル名は？\n";
     cin >> out_filename;
     ofstream fout(out_filename);
     //ファイル及び画面に平均点を出力

@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
     //文字列をそれぞれ数値へと変換
     int animal_num = atoi(argv[1]);
     int leg_num = atoi(argv[2]);
-    //足の本数が奇数や鶴と亀の合計が多いときはエラー
-    if(leg_num % 2 != 0 || (animal_num * 2 > leg_num))
+    //足の本数が奇数や鶴と亀の合計が多いもしくは少ないときはエラー
+    if(leg_num % 2 != 0 || (animal_num * 2 > leg_num) || (animal_num * 4 < leg_num))
     {
         cerr << "鶴と亀の合計数と足の本数に矛盾があります。\n";
         exit(EXIT_FAILURE);
