@@ -41,24 +41,25 @@ int main(int argc, char *argv[])
     for(int i = 0; i < PEOPLE_NUM; i++)
     {
         fin1 >> ids[i];
-        for(int j = 0; j < BIT_LEN; j++)
-            fin1 >> iris[i][j];
+        fin1 >> iris[i];
+        iris[i][BIT_LEN] = '\0';
     }
     //調べたい虹彩情報のデータを格納する配列を宣言
     char input_iris[BIT_LEN + 1];
     //調べたい虹彩情報を読み取り
     fin2 >> input_iris;
+    input_iris[BIT_LEN] = '\0';
     //最小ハミング距離とそのidの変数を宣言
     int closest_dist = BIT_LEN + 1;
     int closest_id = -1;
     //ループで順番に計算していって最小距離だったらその距離とidを保存
-    for(int l = 0; l < PEOPLE_NUM; l++)
+    for(int j = 0; j < PEOPLE_NUM; j++)
     {
-        int dist = calc_hamming_distance(iris[l], input_iris);
+        int dist = calc_hamming_distance(iris[j], input_iris);
         if(dist < closest_dist)
         {
             closest_dist = dist;
-            closest_id = ids[l];
+            closest_id = ids[j];
         }
     }
     cout << "最も似ている人物のIDは" << closest_id << "で、\n";
