@@ -7,11 +7,13 @@ using namespace std;
 //単語を予め小文字および文末記号を削除しておく関数
 string normalize(string s)
 {
+    //小文字化
     for(int i = 0; i < s.length(); i++)
     {
         if(s[i] >= 'A' && (s[i] <= 'Z'))
             s[i] += 'a' - 'A';
     }
+    //文末削除
     char last = s[s.length() - 1];
     if(last == ':' || last == ';' || last == ',' || last == '.')
         s.erase(s.length() - 1);
