@@ -1,9 +1,0 @@
-2つのファイルに共通して出現する単語(単語数:99個)
-a about after age also an and application apply are assessing authentication become but department design designing developing divided education encryption engineering enhancement for from fundamental gives golden how humans in include includes informatics information innovators into involves knowledge later learning manage management managing materials methods multimedia need networking networks not of only operating other our practical processing program programs realization receive related research resulted safety security separate service skills society students subjects support system system-management taught teaching techniques technology that the their they third this threats three to trained use variety various where whose wide will work year 
-
-diff1_2026.txtのみに記載されている単語(単語数:0個)
-
-
-diff2_2026.txtのみに記載されている単語(単語数:21個)
-abundant aim applying as convenient delivering development engages foundation goals graduate learn learning/teaching media please policy refer safe school using with 
-
