@@ -8,9 +8,10 @@
 using namespace std;
 
 //これは数字列の降順ソート
-void file_descending_sort(vector<int> &nums)
+static void file_descending_sort(vector<int> &nums)
 {
     int num_len = nums.size();
+    //ソートアルゴリズムはバブルソート
     for(int i = 0; i < num_len - 1; i++)
     {
         for(int j = 0; j < num_len - i - 1; j++)
@@ -22,7 +23,7 @@ void file_descending_sort(vector<int> &nums)
 }
 
 //これは文字列の降順ソート
-void file_descending_sort(vector<string> &strs)
+static void file_descending_sort(vector<string> &strs)
 {
     int len = strs.size();
     for(int i = 0; i < len - 1; i++)
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
     ifstream fin(argv[1]);
     if(!fin)
     {
-        perror("ファイルが開けませんでした。\n");
+        perror("ファイルが開けませんでした。");
         return(errno);
     }
     //ファイルに記述されている文字列を読み込み

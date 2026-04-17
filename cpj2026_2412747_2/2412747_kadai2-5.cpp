@@ -13,11 +13,11 @@ int main(int argc, char *argv[])
         cerr << "引数が2つではありません。\n";
         return(1);
     }
-    //ファイルの読み込みとエラー処理
+    //ディレクトリの読み込みとエラー処理
     ifstream fin(argv[1]);
     if(!fin)
     {
-        perror("ディレクトリが開けませんでした。\n");
+        perror("ディレクトリが開けませんでした。");
         return(errno);
     }
 

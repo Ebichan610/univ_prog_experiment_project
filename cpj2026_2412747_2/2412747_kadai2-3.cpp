@@ -2,7 +2,7 @@
 using namespace std;
 
 //経路数を計算するプログラム
-int calc_route(int x, int y)
+static int calc_route(int x, int y)
 {
     //例外処理
     if(x == 4 && y == 2)

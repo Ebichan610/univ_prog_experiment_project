@@ -4,7 +4,7 @@
 using namespace std;
 
 template <class T>
-T sumt(T x, T y)
+static T sumt(T x, T y)
 {
     return (x + y);
 }
