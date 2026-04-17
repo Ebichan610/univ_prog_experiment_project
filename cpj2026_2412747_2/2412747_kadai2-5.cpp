@@ -2,12 +2,8 @@
 #include <fstream>
 #include <errno>
 #include <string>
+#include <vector>
 using namespace std;
-
-static bool search_malware(string line)
-{
-    line.find("31 C9 E8 8C 32 00 00 45 31 C0 31");
-}
 
 int main(int argc, char *argv[])
 {
