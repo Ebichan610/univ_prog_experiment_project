@@ -3,84 +3,95 @@
 #include <cerrno>
 #include <string>
 #include <vector>
+#include <cctype>
+#include <algorithm>
 #include <dirent.h>
 #include <sys/stat.h>
 using namespace std;
 
+//マルウェアの特徴であるバイト列を定義
 const unsigned char SIGNATURE[] = {
     0x31, 0xC9, 0xE8, 0x8C, 0x32, 0x00, 0x00, 0x45, 0x31, 0xC0, 0x31
 };
+//上記のバイト列の長さを定義
 const int SIG_LEN = sizeof(SIGNATURE) / sizeof(SIGNATURE[0]);
 
-static vector<int> build_failure_table()
+//通常ファイルなのかどうかを判定する関数
+static bool is_regular_file(string &path)
 {
-    vector<int> table(SIG_LEN, 0);
-    int j = 0;
-    for(int i = 1; i < SIG_LEN; i++)
-    {
-        while(j > 0 && SIGNATURE[i] != SIGNATURE[j])
-            j = table[j - 1];
-        if(SIGNATURE[i] == SIGNATURE[j])
-            j++;
-        table[i] = j;
-    }
-    return(table);
+    struct stat st;
+    //ファイル情報の取得
+    if(stat(path.c_str(), &st) != 0)
+        return(false);
+    //通常ファイルかのチェック
+    return(S_ISREG(st.st_mode));
 }
 
-static int malware_search(vector<unsigned char> &data, vector<int> &table)
-{
-    int j = 0;
-    for(int i = 0; i < (int)data.size(); i++)
-    {
-        while(j > 0 && data[i] != SIGNATURE[j])
-            j = table[j - 1];
-        if(data[i] == SIGNATURE[j])
-            j++;
-        if(j == SIG_LEN)
-            return(i - SIG_LEN + 1);
-    }
-    return(-1);
-}
-
+//ファイルをバイナリ形式で読む関数
 static bool read_binary(string &path, vector<unsigned char> &buf)
 {
+    //ファイルをテキストではなくバイトで読む
     ifstream fin(path, ios::binary);
     if(!fin)
         return(false);
+    //ファイル全体をbufにコピー
     buf.assign(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
     return(true);
 }
 
-static bool is_regular_file(string &path)
+//マルウェアAファミリーが存在するのかを判定する関数
+static bool malware_search(vector<unsigned char> &data)
 {
-    struct stat st;
-    if(stat(path.c_str(), &st) != 0)
+    //SEGV対策
+    if(data.size() < SIG_LEN)
         return(false);
-    return(S_ISREG(st.st_mode));
+    //全探索により検索
+    for(int i = 0; i < data.size() - SIG_LEN; i++)
+    {
+        bool is_find = true;
+
+        for(int j = 0; j < SIG_LEN; j++)
+        {
+            if(data[i + j] != SIGNATURE[j])
+            {
+                is_find = false;
+                break;
+            }
+        }
+        if(is_find == true)
+            return(true);
+    }
+    return(false);
 }
 
+//ファイルの検索順序を自然順にするためのソートの下準備用関数
 static bool natural_num_comp(string &a, string &b)
 {
     int i = 0, j = 0;
 
     while(i < (int)a.size() && j < (int)b.size())
     {
+        //ファイル名が数字であったとき特有の処理
         if(isdigit(a[i]) && isdigit(b[j]))
         {
             int num_a = 0, num_b = 0;
+            //ファイルの数字列を数値として合算
             while(i < (int)a.size() && isdigit(a[i]))
             {
                 num_a = num_a * 10 + ((a[i]) - '0');
                 i++;
             }
+            //ファイルの数字列を数値として合算
             while(j < (int)b.size() && isdigit(b[j]))
             {
                 num_b = num_b * 10 + ((b[j]) - '0');
                 j++;
             }
+            //両者を比較する
             if(num_a != num_b)
                 return(num_a < num_b);
         }
+        //そうでないときは純粋に比較
         else
         {
             if(a[i] != b[j])
@@ -108,20 +119,21 @@ int main(int argc, char *argv[])
         perror("ディレクトリが開けませんでした。");
         return(errno);
     }
-    //
-    vector<int> table = build_failure_table();
-    //
+    //バイナルファイル名を格納するstring型のコンテナ
     vector<string> filenames;
     struct dirent *entry;
+    //ディレクトリ内のエントリをチェック
     while((entry = readdir(dir)) != nullptr)
     {
         string name = entry->d_name;
-        if(name == "." || name == "..")
-            continue;
-        string full_path = dir_path + "/" + name;
-        if(is_regular_file(full_path) == false)
-            continue;
-        filenames.push_back(name);
+        //ディレクトリ内にある.と..は除外
+        if(name != "." || name != "..")
+        {
+            string full_path = dir_path + "/" + name;
+            //通常ファイルかどうかの判定
+            if(is_regular_file(full_path) == true)
+                filenames.push_back(name);
+        }
     }
     //ディレクトリを閉じる
     closedir(dir);
@@ -139,18 +151,14 @@ int main(int argc, char *argv[])
             cerr << "読み込みが失敗しました\n";
             continue;
         }
-
-        int offset = malware_search(buf, table);
-        if(offset != -1)
+        //マルウェアの判定
+        if(malware_search(buf) == true)
         {
-            cout << "[検出]:" << name
-                 << "  オフセット: 0x"
-                 << hex << offset << dec << "\n";
+            cout << "[検出]:" << name << "\n";
             is_find = true;
         }
-
     }
-    //
+    //マルウェアの有無でメッセージを分岐
     if(is_find == true)
         cout << "以上のファイルよりマルウェアAファミリーが検出されました。\n";
     else
