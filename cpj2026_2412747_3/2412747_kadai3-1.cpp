@@ -20,7 +20,7 @@ static bool is_valid_arg(char *str)
 }
 
 //素数かどうかを判定する関数
-bool is_prime(int num)
+static bool is_prime(int num)
 {
     //0と1は素数判定に関係がないので排除
     if(num <= 1)
