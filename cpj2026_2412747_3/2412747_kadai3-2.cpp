@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cerrno>
+#include <climits>
 using namespace std;
 
 static int calc_num_of_nums_in_file(const char *filename)
@@ -35,13 +36,21 @@ static void ft_swap(int *a, int *b)
 //昇順ソート関数
 static void ascending_sort(int* nums, int N)
 {
-    for(int i = 0; i < N - 1; i++)
+    int max = nums[0];
+    int max_i = 0;
+    for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < N - i - 1; j++)
+        for(int j = 0; j < i; j++)
         {
-            if(nums[j] > nums[j + 1])
-                ft_swap(&nums[j], &nums[j + 1]);
+            if(max < nums[j])
+            {
+                max = nums[j];
+                max_i = j;
+            }
         }
+        swap(nums[i], nums[max_i]);
+        max = nums[0];
+        max_i = 0;
     }
 }
 

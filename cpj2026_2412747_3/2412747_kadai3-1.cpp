@@ -9,7 +9,7 @@ static bool is_valid_arg(char *str)
 {
     while(isspace(*str))
         str++;
-    if(*str == '+')
+    while(*str == '+')
         str++;
     if(*str < '0' || *str > '9')
         return(false);
