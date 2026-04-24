@@ -25,13 +25,15 @@ bool is_prime(int num)
     //0と1は素数判定に関係がないので排除
     if(num <= 1)
         return(false);
+    if(num == 2)
+        return(true);
     //2だけは例外で処理
     if(num % 2 == 0)
         return(false);
     //3からは順番に奇数を試す
     int i = 3;
     //iがnumの平方根よりも大きい時点で処理を終了
-    while(i * i < num)
+    while(i * i <= num)
     {
         if(num % i == 0)
             return(false);
@@ -57,7 +59,7 @@ int main(int argc, char *argv[])
     //数字をint型に変換
     int N = atoi(argv[1]);
     //0と1は数学的におかしいので排除
-    if(N == '0' || N == '1')
+    if(N == 0 || N == 1)
     {
         cerr << "0と1は素数ではありません。2以上の整数を入力してください\n";
         return(1);
