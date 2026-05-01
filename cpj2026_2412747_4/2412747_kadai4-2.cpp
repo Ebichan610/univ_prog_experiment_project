@@ -103,5 +103,10 @@ void PCRoom::PrintPCMem()
 
 int main()
 {
+    ClassRoom room1;
+    PCRoom room2;
 
+    room1.PrintMem();
+    room2.PrintPCMem();
+    return(0);
 }
