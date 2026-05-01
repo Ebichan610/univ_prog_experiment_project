@@ -77,14 +77,17 @@ int main(int argc, char *argv[])
             nums[j] = "0";
     }
     //素数だったものを出力
+    //出力を工夫する
+    bool last = false;
     for(int k = 0; k <= N; k++)
     {
         //1であるインデックスなら出力
         if(nums[k] == "1")
         {
-            cout << k;
-            if(k != N)
+            if(last == true)
                 cout << ',';
+            cout << k;
+            last = true;
         }
     }
     cout << '\n';
