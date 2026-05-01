@@ -3,83 +3,153 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
-#include <cmath>
-
+#include <algorithm>
+#include <cerrno>
 using namespace std;
 
+//人数、データ数、次元数の定数の定義
 static const int PERSONS   = 300;
 static const int NUM       = 5;
 static const int DIMENSION = 1000;
 
+//2種の配列(平均データ、インプットデータ)のグローバル変数の定義
 static double avg[PERSONS][DIMENSION];
 static double test_data[DIMENSION];
 
-// カンマ区切りの1000次元ベクトルを読み込む（ID行・空行はスキップ）
-bool read_next_vector(ifstream &fin, double *out) {
+// カンマ区切りのテキストファイルから1000次元ベクトルを読み取る関数
+static void read_vector(ifstream &fin, double *sum) 
+{
     string line;
-    while (getline(fin, line)) {
-        if (line.find(',') == string::npos) continue; // ID行・空行をスキップ
-
+    //ファイルから1行ずつ読み取る
+    while (getline(fin, line))
+    {
+        //カンマが含まれない行(ID行や空行)はデータではないので飛ばす
+        if (line.find(',') == string::npos)
+            continue;
+        
         stringstream ss(line);
         string token;
-        int cnt = 0;
-        while (cnt < DIMENSION && getline(ss, token, ','))
-            out[cnt++] = atof(token.c_str());
-
-        if (cnt == DIMENSION) return true;
+        int count = 0;
+        //カンマで区切られた値を格納
+        while(count < DIMENSION && getline(ss, token, ','))
+            sum[count++] = atof(token.c_str());
+        
+        //指定量の1000個を読み取ったら終了
+        if (count == DIMENSION) 
+            return; 
     }
-    return false;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        cerr << "使用法: " << argv[0] << " enrollment2026.txt input2026.txt" << endl;
-        return 1;
+int main(int argc, char *argv[])
+{
+    //引数エラー処理
+    if (argc != 3)
+    {
+        cerr << "引数が2つではありません。\n";
+        return(1);
     }
 
-    // --- 学習フェーズ: 各人物の平均ベクトルを作成 ---
+    //---- 各人の画像データの読み込みおよび平均顔の作成 ----
+    //ファイルの読み込み
     ifstream fin1(argv[1]);
-    if (!fin1) { cerr << "学習ファイルが開けません: " << argv[1] << endl; return 1; }
+    if (!fin1)
+    {
+        perror("1つ目のファイルが開けません:");
+        return(errno);
+    }
 
-    for (int i = 0; i < PERSONS; i++) {
-        for (int j = 0; j < NUM; j++) {
-            if (!read_next_vector(fin1, test_data)) {
-                cerr << "学習データ不足: person=" << i << ", sample=" << j << endl;
-                return 1;
-            }
-            for (int k = 0; k < DIMENSION; k++)
-                avg[i][k] += test_data[k];
+    
+    for (int i = 0; i < PERSONS; i++)
+    {
+        //初期化
+        for (int j = 0; j < DIMENSION; j++)
+            avg[i][j] = 0.0;
+
+        //1人あたり5枚のデータを読み込み、加算していく
+        for (int k = 0; k < NUM; k++)
+        {
+            read_vector(fin1, test_data);
+            for (int l = 0; l < DIMENSION; l++)
+                avg[i][l] += test_data[l];
         }
-        for (int k = 0; k < DIMENSION; k++)
-            avg[i][k] /= NUM;
+        //合計を枚数の5で割り、平均を算出
+        for (int m = 0; m < DIMENSION; m++)
+            avg[i][m] /= (double)NUM;
     }
     fin1.close();
 
-    // --- 識別フェーズ: 最近傍法（ユークリッド距離の二乗）で識別 ---
-    ifstream fin2(argv[2]);
-    if (!fin2) { cerr << "識別ファイルが開けません: " << argv[2] << endl; return 1; }
 
-    int correct = 0, total = 0;
-    while (total < PERSONS && read_next_vector(fin2, test_data)) {
-        double min_dist = -1.0;
-        int predicted = -1;
-        for (int p = 0; p < PERSONS; p++) {
+    // ---- 各人物の正解ランクを求める ----
+    ifstream fin2(argv[2]);
+    if (!fin2)
+    {
+        perror("2つ目のファイルが開けません:");
+        return(errno);
+    }
+    //各人物の正解ランクを記録する配列
+    int rank_list[PERSONS];
+
+    for (int total = 0; total < PERSONS; total++)
+    {
+        //値の読み取り
+        read_vector(fin2, test_data);
+        // 全300人との距離を計算
+        double dists[PERSONS];
+        for (int i = 0; i < PERSONS; i++)
+        {
             double dist = 0.0;
-            for (int d = 0; d < DIMENSION; d++) {
-                double diff = test_data[d] - avg[p][d];
+            for (int j = 0; j < DIMENSION; j++)
+            {
+                //差分を取り
+                double diff = test_data[j] - avg[i][j];
+                //二乗値を加算
                 dist += diff * diff;
             }
-            if (min_dist < 0 || dist < min_dist) { min_dist = dist; predicted = p; }
+            dists[i] = dist;
         }
-        if (predicted == total) correct++;
-        total++;
+
+        //正解人物の距離より小さい距離の数を数える
+        double correct_dist = dists[total];
+        int rank = 1;
+        for (int k = 0; k < PERSONS; k++)
+        {
+            if(dists[k] < correct_dist)
+                rank++;
+        }
+        //これを配列の要素に代入
+        rank_list[total] = rank;
     }
     fin2.close();
 
-    // --- 結果出力 ---
-    cout << "正解数: " << correct << " / " << total << endl;
-    cout << "識別率: " << fixed << setprecision(2)
-         << (total > 0 ? (double)correct / total * 100.0 : 0.0) << " %" << endl;
+    // ---- 累積識別率の計算と出力 ----
+    //正解(1位)がいくらかを計算
+    int correct_rank = 0;
+    for (int i = 0; i < PERSONS; i++)
+    {
+        if (rank_list[i] == 1)
+            correct_rank++;
+    }
+    //結果を出力
+    cout << "1位識別率: " << fixed << setprecision(2) << (double)correct_rank / PERSONS * 100.0 << " %\n";
 
-    return 0;
+    //result.csvに値を出力
+    ofstream fout("result.csv");
+    fout << "N,rate\n";
+    //許容するランクを1ずつ増やして計算
+    for (int n = 1; n <= PERSONS; n++)
+    {
+        int count = 0;
+        for (int i = 0; i < PERSONS; i++)
+        {
+            if (rank_list[i] <= n)
+                count++;
+        }
+        //結果を書き込み
+        fout << n << "," << fixed << setprecision(2)
+             << (double)count / PERSONS * 100.0 << "\n";
+    }
+    fout.close();
+    cout << "累積識別率データをresult.csvに出力しました。\n";
+
+    return(0);
 }
