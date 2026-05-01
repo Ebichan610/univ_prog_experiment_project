@@ -5,6 +5,9 @@ using namespace std;
 //最大公約数を求める関数
 static int calc_gcd(int m, int n)
 {
+    //もし片方が0であるならば、もう片方を返す
+    if(n == 0)
+        return(m);
     int r = m % n;
     while(r != 0)
     {
@@ -32,9 +35,9 @@ int main(int argc, char *argv[])
             return(1);
         }
     }
-    for(int j = 0; argv[1][j] != '\0'; j++)
+    for(int j = 0; argv[2][j] != '\0'; j++)
     {
-        if(argv[1][j] < '0' || argv[1][j] > '9')
+        if(argv[2][j] < '0' || argv[2][j] > '9')
         {
             cerr << "引数に0~9の数字以外の文字が入っています。正の整数を入力してください。\n";
             return(1);
@@ -54,10 +57,10 @@ int main(int argc, char *argv[])
         m = y;
         n = x;
     }
-    //0は弾く
-    if(m == 0 || n == 0)
+    //両方0は弾く
+    if(m == 0 && n == 0)
     {
-        cerr << "正の整数を入力してください。\n";
+        cerr << "両方とも0の場合、不定となるので計算できません。\n";
         return(1);
     }
     //最大公約数を求める処理
