@@ -1,8 +1,10 @@
 #include <iostream>
+#include <cmath>
 #include <cstdio>
 #include <cctype>
 using namespace std;
 
+//複素数の実部と虚部をもつ構造体
 typedef struct s_comp_num
 {
     double real;
@@ -48,31 +50,137 @@ static t_quad initialize_quad(char* argv[])
 
 static void calc_quad(t_quad& quad)
 {
-    //計算結果を保存する変数
-    t_comp_num res1, res2;
-    //複素数解とならない場合
-    if(quad.b * quad.b - 4 * quad.a * quad.c >= 0)
+    // 解と係数の関係の利用
+    //和
+    double sum = -quad.b / quad.a;
+    //積
+    double pro =  quad.c / quad.a;
+    //判別式
+    double disc = quad.b * quad.b - 4.0 * quad.a * quad.c;
+
+    //実数解ならば
+    if (disc >= 0)
     {
-        //虚数部は存在せず
-        res1.img = 0;
-        res2.img = 0;
-        //実数部の計算
-        res1.real = (-quad.b - sqrt(quad.b * quad.b - 4 * quad.a * quad.c)) / 2.0 * quad.a;
-        res2.real = (-quad.b + sqrt(quad.b * quad.b - 4 * quad.a * quad.c)) / 2.0 * quad.a;
+
+        double x1 = (-quad.b - sqrt(disc)) / (2.0 * quad.a);
+        double x2;
+        //0除算回避
+        if (x1 != 0.0)
+            x2 = pro / x1;
+        else
+            x2 = sum - x1;
+        //それぞれに格納
+        quad.ans1.real = x1;
+        quad.ans1.img  = 0.0;
+        quad.ans2.real = x2;
+        quad.ans2.img  = 0.0;
     }
-    //複素数解となる場合
+    //虚数部もあるならば
     else
     {
-        //虚数部単体の計算
-        res1.img = -sqrt(4 * quad.a * quad.c - quad.b * quad.b) / 2.0 * quad.a;
-        res2.img = sqrt(4 * quad.a * quad.c - quad.b * quad.b) / 2.0 * quad.a;
-        //実数部単体の計算
-        res1.real = -quad.b;
-        res2.real = -quad.b;
+        double real = sum / 2.0;
+        double img = sqrt(-disc) / (2.0 * quad.a);
+        //求めたものを代入
+        quad.ans2.real = real;
+        quad.ans2.img  = img;
+        //解と係数の関係から計算
+        double denom = real * real + img * img;
+        quad.ans1.real =  pro * real / denom;
+        quad.ans1.img  = -pro * img / denom;
     }
-    //アドレス引数のquadにそれぞれの解を代入
-    quad.ans1 = res1;
-    quad.ans2 = res2;
+}
+
+//「+」や「-」の出力を工夫して出すための関数
+//「-」の場合のみ出力したい場合を考えて第2引数を追加
+static string plus_or_minus(double num, bool minus_only)
+{
+    if(num > 0 && minus_only == false)
+        return("+");
+    else if(num < 0)
+        return("-");
+    else
+        return("");
+}
+
+//方程式とその解を出力する関数
+static void print_quad(t_quad quad)
+{
+    //-符号
+    if(quad.a < 0)
+        cout << plus_or_minus(quad.a, true);
+    //先頭に1はつけない
+    if(abs(quad.a) != 1)
+        cout << quad.a;
+    //2乗の出力
+    cout << "x\u00B2 ";
+    //b = 0の場合は出力しない
+    if(quad.b != 0)
+        cout << plus_or_minus(quad.b, false) << " " << abs(quad.b)<< "x ";
+    //c = 0の場合は出力しない
+    if(quad.c != 0)
+        cout << plus_or_minus(quad.c, false) << " " << abs(quad.c);
+    cout <<" = 0の解は、\n";
+    //実数の場合
+    if(quad.ans1.img == 0)
+    {
+        //重解
+        if(quad.ans1.real == quad.ans2.real)
+            cout <<"x = " << plus_or_minus(quad.ans1.real, true)
+                << abs(quad.ans1.real) << " (重解)です。\n";
+        //重解でない
+        else
+            cout << "x = " << plus_or_minus(quad.ans1.real, true) << abs(quad.ans1.real)
+                << "と、x = " << plus_or_minus(quad.ans2.real, true) << abs(quad.ans2.real)
+                << "です。\n";
+    }
+    //虚数部がある場合
+    else
+    {
+        //重解
+        if(quad.ans1.real == quad.ans2.real)
+        {
+            cout << "x = ";
+            //実部が0なら出力しない
+            if(quad.ans1.real != 0)
+                cout << plus_or_minus(quad.ans1.real,true) << abs(quad.ans1.real) << " ";
+            cout << plus_or_minus(quad.ans1.img,false);
+            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
+            if(quad.ans1.real != 0)
+                cout << " ";
+            //虚部に1はつけない
+            if(abs(quad.ans1.img) != 1)
+                cout << abs(quad.ans1.img);
+            cout << "i (重解)です。\n";
+
+        }
+        //重解でない
+        else
+        {
+            cout << "x = ";
+            //実部が0なら出力しない
+            if(quad.ans1.real != 0)
+                cout << plus_or_minus(quad.ans1.real,true) << abs(quad.ans1.real) << " ";
+            cout << plus_or_minus(quad.ans1.img,false);
+            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
+            if(quad.ans1.real != 0)
+                cout << " ";
+            //虚部に1はつけない
+            if(abs(quad.ans1.img) != 1)
+                cout << abs(quad.ans1.img);
+            cout << "iと、"<< "x = ";
+            //実部が0なら出力しない
+            if(quad.ans2.real != 0)
+                cout << plus_or_minus(quad.ans2.real,true) << abs(quad.ans2.real) << " ";
+            cout << plus_or_minus(quad.ans2.img, false);
+            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
+            if(quad.ans2.real != 0)
+                cout << " ";
+            //虚部に1はつけない
+            if(abs(quad.ans2.img) != 1)
+                cout << abs(quad.ans2.img);
+            cout << "iです。\n";
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -107,13 +215,6 @@ int main(int argc, char *argv[])
     calc_quad(quad);
 
     //出力をそれぞれの場合で分ける
-    cout << quad.a << "x\u00B2 + " << quad.b << "x + " << quad.c <<" = 0の解は、\n";
-    if(quad.ans1.img == 0)
-        cout << "x = " << quad.ans1.real << "と、x = " << quad.ans2.real << "です。\n";
-    else
-    {
-        cout << "x = " << quad.ans1.real << " + " << quad.ans1.img << "iと、"
-            << "x = " << quad.ans2.real << " + " << quad.ans2.img << "iです。\n";
-    }
+    print_quad(quad);
     return(0);
 }
