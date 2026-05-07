@@ -5,13 +5,8 @@ using namespace std;
 class Matrix
 {
     public:
-        //行列のサイズ
-        int width;
-        int height;
         //コンストラクタ
         Matrix(int width, int height, int* elem);
-        //コピーコンストラクタ
-        Matrix(const Matrix& other);
         //デストラクタ
         ~Matrix();
         //行列演算用関数
@@ -22,6 +17,9 @@ class Matrix
         //出力用関数
         void   print() const;
     private:
+        //行列のサイズ
+        int width;
+        int height;
         int **data;
         //余因子展開用関数
         Matrix getCofactor(int row, int col) const;
@@ -62,37 +60,6 @@ Matrix::Matrix(int w, int h, int* elem)
         }
         cerr << "メモリの確保に失敗しました:" << e.what() << '\n';
         //呼び出し元に投げる
-        throw;
-    }
-}
-
-//コピーコンストラクタ(内容はコンストラクタとほぼ同様)
-Matrix::Matrix(const Matrix& other)
-    :width(other.width),
-    height(other.height),
-    data(nullptr)
-{
-    try
-    {
-        data = new int* [height];
-        for(int i = 0; i < height; i++)
-            data[i] = nullptr;
-        for(int i = 0; i < height; i++)
-        {
-            data[i] = new int [width];
-            for(int j = 0; j < width; j++)
-                data[i][j] = other.data[i][j];
-        }
-    }
-    catch(bad_alloc& e)
-    {
-        if(data != nullptr)
-        {
-            for(int i = 0; i < height; i++)
-                delete[] data[i];
-            delete[] data;
-        }
-        cerr << "メモリの確保に失敗しました:" << e.what() << '\n';
         throw;
     }
 }
@@ -256,16 +223,41 @@ int main()
                 3, 4};
     int e2[] = {5, 6,
                 7, 8};
+    //行列のサイズを決定
+    int w1 = 2, h1 = 2;
+    int w2 = 2, h2 = 2;
+    //先に要素を指定した方の行列のサイズをはかる
+    int size1 = sizeof(e1) / sizeof(e1[0]);
+    int size2 = sizeof(e2) / sizeof(e2[0]);
+    if(w1 * h1 != size1 || w2 * h2 != size2)
+    {
+        cerr << "正しい行列の大きさを指定してください。\n";
+        return(1);
+    }
+
+    //投げられたエラーを拾うようにtry-catch文に
     //インスタンス化
-    Matrix M1(2, 2, e1);
-    Matrix M2(2, 2, e2);
-    //出力部分(可読性のために各工程毎に一行に記述)
-    cout << "M1:\n";        M1.print();
-    cout << "M2:\n";        M2.print();
-    cout << "M1 + M2:\n";  M1.add(M2).print();
-    cout << "M1 - M2:\n";  M1.sub(M2).print();
-    cout << "M1 * M2:\n";  M1.mul(M2).print();
-    cout << "det(M1) = " << M1.det() << "\n";
-    cout << "det(M2) = " << M2.det() << "\n";
+    try{
+        Matrix M1(w1, h1, e1);
+        Matrix M2(w2, h2, e2);
+
+        //出力部分(可読性のために各工程毎に一行に記述)
+        cout << "M1:\n";        M1.print();
+        cout << "M2:\n";        M2.print();
+        cout << "M1 + M2:\n";  M1.add(M2).print();
+        cout << "M1 - M2:\n";  M1.sub(M2).print();
+        cout << "M1 * M2:\n";  M1.mul(M2).print();
+        cout << "det(M1) = " << M1.det() << "\n";
+        cout << "det(M2) = " << M2.det() << "\n";
+    }
+    catch(bad_alloc& e)
+    {
+        return(1);
+    }
+    catch(invalid_argument& e)
+    {
+        cerr << e.what();
+        return(1);
+    }
     return(0);
 }
