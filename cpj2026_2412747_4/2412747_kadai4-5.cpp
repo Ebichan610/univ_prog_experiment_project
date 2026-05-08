@@ -65,26 +65,25 @@ bool MalwareFile::loadFile(const string& filename)
     //1行ずつ読み込み
     while(getline(fin, line))
     {
+        //空行スキップ(念のため)
         if(line.empty())
             continue;
-        if(!line.empty())
+        //最後の\rsを削除
+        if(!line.empty() && line.back() == '\r')
             line.pop_back();
+        
+        //csvの解析用
         stringstream ss(line);
         string token;
         vector <double> vals;
+        //カンマによって区切って
         while(getline(ss, token, ','))
-        {
-            try
-            {
-                vals.push_back(stod(token));
-            }
-            catch(...)
-            {
-            }
-            if(vals.size() >= 2)
-                data.push_back(DataPoint(vals[0], vals[1]));
-        }
+            //文字列をダブルに変換
+            vals.push_back(stod(token));
+        //データを保存
+        data.push_back(DataPoint(vals[0], vals[1]));
     }
+    //データが空でなければtrue(念の為)
     return (!data.empty());
 }
 
@@ -92,9 +91,11 @@ bool MalwareFile::loadFile(const string& filename)
 void MalwareFile::fitModel()
 {
     int n = (int)data.size();
+    //考えづらいが念の為
     if(n < 2)
         return;
     
+    //ゲッターにより値を取得し平均を算出
     double meanX = 0, meanY = 0;
     for(const DataPoint& p: data)
     {
@@ -104,6 +105,7 @@ void MalwareFile::fitModel()
     meanX /= n;
     meanY /= n;
 
+    //分散と共分散を算出
     double Sxx = 0, Sxy = 0, Syy = 0;
     for(const DataPoint& p: data)
     {
@@ -114,23 +116,27 @@ void MalwareFile::fitModel()
         Syy += dy * dy;
     }
 
+    //共分散があまりにも小さいならa=0とみなす
     if(abs(Sxy) < 1e-10)
         a = 0;
     else
         a = (Syy - Sxx +sqrt(pow(Syy - Sxx, 2) + 4 * pow(Sxy, 2))) / (2 * Sxy);
-
+    //切片
     b = meanY - a * meanX;
 }
 
 //直線距離の平均を求める関数
 double MalwareFile::avgDist(const MalwareFile& unknown) const
 {
+    //ゲッターによりデータを取得
     const vector<DataPoint>& points = unknown.getData();
+    //無いがデータが空なら莫大な値を返すように設計
     if(points.empty())
         return(1e10);
     double total = 0;
     for(const DataPoint& p: points)
         total += distToLine(p.getfeat1(), p.getfeat2());
+    //最後にサイズで割って平均を返す
     return(total / points.size());
 }
 

@@ -53,7 +53,7 @@ class TextAnalyzer
         vector<string> words;
         //出現頻度のvector
         vector<WordFreq> freqtable;
-        //解析する文章の単語を格納
+        //解析する文を格納
         string text;
 };
 
@@ -77,7 +77,7 @@ bool TextAnalyzer::loadFile(const string& filename)
         //\rの条件はテストの結果必要だった
         if(!line.empty() && line.back() == '\r')
             line.pop_back();
-        //単語を空白毎に区切る
+        //文を空白毎に区切る
         text += line + " ";
     }
     return(true);
@@ -92,8 +92,10 @@ void TextAnalyzer::countFreq()
     string tmp = "";
     for(int i = 0; i <= (int)text.size(); i++)
     {
+        //最後の単語を確定させる(範囲外アクセスを防ぐ)
         char c = (i < (int)text.size()) ? text[i] : ' ';
         //単語部分を探索している
+        //単語途中に数字が来る場合は許可
         if((unsigned char)isalpha(c) || ((unsigned char)isdigit(c) && !tmp.empty()))
             //小文字に統一
             tmp += (unsigned char)tolower(c);
@@ -121,11 +123,12 @@ void TextAnalyzer::countFreq()
     //単語の長さ毎にテーブルを作成
     for(int i = 1; i <= max_len; i++)
         freqtable.push_back(WordFreq(i, 0));
-    
+    //出現頻度カウント
     for(const string& w: words)
     {
         int len = (int)w.size();
         if(len >= 1 && len <= max_len)
+            //始まりが0からなのでlen-1
             freqtable[len - 1].addFreq();
     }
 }
@@ -200,7 +203,7 @@ int TextAnalyzer::getSentenceCount() const
                 count++;
         }
     }
-    //三項演算子
+    //三項演算子(0除算回避)
     return(count == 0) ? 1 : count;
 }
 
