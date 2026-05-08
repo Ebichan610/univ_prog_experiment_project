@@ -110,7 +110,7 @@ static void print_quad(t_quad quad)
         cout << plus_or_minus(quad.a, true);
     //先頭に1はつけない
     if(abs(quad.a) != 1)
-        cout << quad.a;
+        cout << abs(quad.a);
     //2乗の出力
     cout << "x\u00B2 ";
     //b = 0の場合は出力しない
