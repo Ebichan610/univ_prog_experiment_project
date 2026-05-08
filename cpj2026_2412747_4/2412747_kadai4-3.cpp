@@ -7,6 +7,8 @@ class Matrix
     public:
         //コンストラクタ
         Matrix(int width, int height, int* elem);
+        //コピーコンストラクタ
+        Matrix(const Matrix& other);
         //デストラクタ
         ~Matrix();
         //行列演算用関数
@@ -60,6 +62,32 @@ Matrix::Matrix(int w, int h, int* elem)
         }
         cerr << "メモリの確保に失敗しました:" << e.what() << '\n';
         //呼び出し元に投げる
+        throw;
+    }
+}
+
+//コピーコンストラクタ(Ubuntuでは必須)
+Matrix::Matrix(const Matrix& other)
+    : height(other.height), width(other.width), data(nullptr)
+{
+    try {
+        data = new int*[height];
+        for (int i = 0; i < height; i++)
+            data[i] = nullptr;
+
+        for (int i = 0; i < height; i++) {
+            data[i] = new int[width];
+            for (int j = 0; j < width; j++)
+                data[i][j] = other.data[i][j];
+        }
+    }
+    catch (const bad_alloc& e) {
+        if (data != nullptr) {
+            for (int i = 0; i < height; i++)
+                delete[] data[i];
+            delete[] data;
+        }
+        cerr << "メモリの確保に失敗しました: " << e.what() << "\n";
         throw;
     }
 }

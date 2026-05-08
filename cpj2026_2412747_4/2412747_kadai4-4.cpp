@@ -96,7 +96,7 @@ void TextAnalyzer::countFreq()
         char c = (i < (int)text.size()) ? text[i] : ' ';
         //単語部分を探索している
         //単語途中に数字が来る場合は許可
-        if((unsigned char)isalpha(c) || ((unsigned char)isdigit(c) && !tmp.empty()))
+        if(isalpha((unsigned char)c) || (isdigit((unsigned char)c) && !tmp.empty()))
             //小文字に統一
             tmp += (unsigned char)tolower(c);
         //空白が来たのならば
