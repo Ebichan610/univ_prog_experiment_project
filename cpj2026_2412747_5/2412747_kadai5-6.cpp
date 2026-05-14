@@ -225,10 +225,8 @@ int main(int argc, char* argv[])
         dirname + "unknown3.ppm",
     };
 
-    for(auto& p : train_files)
+    for(const auto& filename : unknown_files)
     {
-        const string& filename = p.first;
-        int label              = p.second;
         cv::Mat img = cv::imread(filename);
         if(img.empty())
         {
