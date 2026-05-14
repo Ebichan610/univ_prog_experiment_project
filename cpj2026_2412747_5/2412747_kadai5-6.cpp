@@ -111,8 +111,10 @@ int main(int argc, char* argv[])
     
     //学習データの特徴量抽出
     //vectorから一つずつ学習画像を読み込む
-    for(auto& [filename, label] : train_files)
+    for(auto& p : train_files)
     {
+        const string& filename = p.first;
+        int label              = p.second;
         cv::Mat img = cv::imread(filename);
         if(img.empty())
         {
@@ -223,8 +225,10 @@ int main(int argc, char* argv[])
         dirname + "unknown3.ppm",
     };
 
-    for(auto& filename : unknown_files)
+    for(auto& p : train_files)
     {
+        const string& filename = p.first;
+        int label              = p.second;
         cv::Mat img = cv::imread(filename);
         if(img.empty())
         {
