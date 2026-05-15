@@ -1,0 +1,12 @@
+.DS_Store
+a.out
+output.pgm
+plot.py
+plot.ipynb
+result.csv
+result.bmp
+Makefile
+ImageSource
+ImageSourceWithoutNumber
+number
+PythonBeautoRover2.py
