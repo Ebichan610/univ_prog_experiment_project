@@ -136,52 +136,32 @@ static void print_quad(t_quad quad)
     //虚数部がある場合
     else
     {
-        //重解
-        if(quad.ans1.real == quad.ans2.real)
-        {
-            cout << "x = ";
-            //実部が0なら出力しない
-            if(quad.ans1.real != 0)
-                cout << plus_or_minus(quad.ans1.real,true) << abs(quad.ans1.real) << " ";
-            cout << plus_or_minus(quad.ans1.img,false);
-            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
-            if(quad.ans1.real != 0)
-                cout << " ";
-            //虚部に1はつけない
-            if(abs(quad.ans1.img) != 1)
-                cout << abs(quad.ans1.img);
-            cout << "i (重解)です。\n";
-
-        }
-        //重解でない
-        else
-        {
-            cout << "x = ";
-            //実部が0なら出力しない
-            if(quad.ans1.real != 0)
-                cout << plus_or_minus(quad.ans1.real,true) << abs(quad.ans1.real) << " ";
-            cout << plus_or_minus(quad.ans1.img,false);
-            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
-            if(quad.ans1.real != 0)
-                cout << " ";
-            //虚部に1はつけない
-            if(abs(quad.ans1.img) != 1)
-                cout << abs(quad.ans1.img);
-            cout << "iと、"<< "x = ";
-            //実部が0なら出力しない
-            if(quad.ans2.real != 0)
-                cout << plus_or_minus(quad.ans2.real,true) << abs(quad.ans2.real) << " ";
-            cout << plus_or_minus(quad.ans2.img, false);
-            //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
-            if(quad.ans2.real != 0)
-                cout << " ";
-            //虚部に1はつけない
-            if(abs(quad.ans2.img) != 1)
-                cout << abs(quad.ans2.img);
-            cout << "iです。\n";
-        }
+        cout << "x = ";
+        //実部が0なら出力しない
+        if(quad.ans1.real != 0)
+            cout << plus_or_minus(quad.ans1.real,true) << abs(quad.ans1.real) << " ";
+        cout << plus_or_minus(quad.ans1.img,false);
+        //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
+        if(quad.ans1.real != 0)
+            cout << " ";
+        //虚部に1はつけない
+        if(abs(quad.ans1.img) != 1)
+            cout << abs(quad.ans1.img);
+        cout << "iと、"<< "x = ";
+        //実部が0なら出力しない
+        if(quad.ans2.real != 0)
+            cout << plus_or_minus(quad.ans2.real,true) << abs(quad.ans2.real) << " ";
+        cout << plus_or_minus(quad.ans2.img, false);
+        //実部が0のときは虚部が先頭に来るので負符号と数値の間に空白はいらない
+        if(quad.ans2.real != 0)
+            cout << " ";
+        //虚部に1はつけない
+        if(abs(quad.ans2.img) != 1)
+            cout << abs(quad.ans2.img);
+        cout << "iです。\n";
     }
 }
+
 
 int main(int argc, char *argv[])
 {

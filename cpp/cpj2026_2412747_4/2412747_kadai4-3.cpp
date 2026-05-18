@@ -246,14 +246,17 @@ void Matrix::print() const
 
 int main()
 {
+    //1問目
     //行列の値をint配列で定義
-    int e1[] = {1, 2,
-                3, 4};
-    int e2[] = {5, 6,
-                7, 8};
+    int e1[] = {1, 5, 2,
+                8, 4, 6,
+                5, 2, 3};
+    int e2[] = {7, 1, 1,
+                5, 2, 5,
+                3, 1, 4};
     //行列のサイズを決定
-    int w1 = 2, h1 = 2;
-    int w2 = 2, h2 = 2;
+    int w1 = 3, h1 = 3;
+    int w2 = 3, h2 = 3;
     //先に要素を指定した方の行列のサイズをはかる
     int size1 = sizeof(e1) / sizeof(e1[0]);
     int size2 = sizeof(e2) / sizeof(e2[0]);
@@ -274,9 +277,69 @@ int main()
         cout << "M2:\n";        M2.print();
         cout << "M1 + M2:\n";  M1.add(M2).print();
         cout << "M1 - M2:\n";  M1.sub(M2).print();
-        cout << "M1 * M2:\n";  M1.mul(M2).print();
-        cout << "det(M1) = " << M1.det() << "\n";
-        cout << "det(M2) = " << M2.det() << "\n";
+        // cout << "det(M1) = " << M1.det() << "\n";
+        // cout << "det(M2) = " << M2.det() << "\n";
+    }
+    catch(bad_alloc& e)
+    {
+        return(1);
+    }
+    catch(invalid_argument& e)
+    {
+        cerr << e.what();
+        return(1);
+    }
+
+    //2問目
+    //1問目と同様のロジック
+    int e3[] = {1, 5, 
+                8, 4};
+    int e4[] = {7, 1,
+                5, 2};
+    int w3 = 2, h3 = 2;
+    int w4 = 2, h4 = 2;
+    int size3 = sizeof(e3) / sizeof(e3[0]);
+    int size4 = sizeof(e4) / sizeof(e4[0]);
+    if(w3 * h3 != size3 || w4 * h4 != size4)
+    {
+        cerr << "正しい行列の大きさを指定してください。\n";
+        return(1);
+    }
+    try{
+        Matrix M3(w3, h3, e3);
+        Matrix M4(w4, h4, e4);
+
+        cout << "M3:\n";        M3.print();
+        cout << "M4:\n";        M4.print();
+        cout << "M3 * M4:\n";  M3.mul(M4).print();
+    }
+    catch(bad_alloc& e)
+    {
+        return(1);
+    }
+    catch(invalid_argument& e)
+    {
+        cerr << e.what();
+        return(1);
+    }
+
+    //3問目
+    //1、2問目と同様のロジック
+    int e5[] = {3, 4, -1,
+                2, 5, -2,
+                1, 6, -4};
+    int w5 = 3, h5 = 3;
+    int size5 = sizeof(e5) / sizeof(e5[0]);
+    if(w5 * h5 != size5)
+    {
+        cerr << "正しい行列の大きさを指定してください。\n";
+        return(1);
+    }
+    try{
+        Matrix M5(w5, h5, e5);
+
+        cout << "M1:\n";        M5.print();
+        cout << "det(M5) = " << M5.det() << "\n";
     }
     catch(bad_alloc& e)
     {
