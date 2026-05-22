@@ -338,7 +338,7 @@ int main()
     try{
         Matrix M5(w5, h5, e5);
 
-        cout << "M1:\n";        M5.print();
+        cout << "M5:\n";        M5.print();
         cout << "det(M5) = " << M5.det() << "\n";
     }
     catch(bad_alloc& e)
