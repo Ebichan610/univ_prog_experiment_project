@@ -16,6 +16,8 @@ def processing_threshold():
     cv2.imshow("Apple", img)
     cv2.imshow("Apple_result", img_threshold)
     cv2.waitKey()
+    cv2.destroyAllWindows()
+    root.destroy()
 
 root = tk.Tk()
 root.title("2412747 Pythonで赤色抽出")
