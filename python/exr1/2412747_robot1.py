@@ -46,7 +46,10 @@ while cap.isOpened():
     mask = red_mask(frame)
     mu = cv2.moments(mask, True)
     area = mu["m00"]
-    cx = int(mu["m10"] / area) if area > 0 else -1
+    if area > 0:
+        cx = int(mu["m10"] / area)
+    else:
+        cx = -1
     cmd = decide(area, cx, w)
     if cmd != last:
         ser.write(bytes(cmd, 'utf-8'))
@@ -55,6 +58,7 @@ while cap.isOpened():
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break
 
+# これで安全に終われるらしい
 ser.write(bytes('s', 'utf-8'))
 ser.write(bytes('a', 'utf-8'))
 ser.close()
