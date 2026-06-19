@@ -12,7 +12,7 @@ def skin_mask(frame):
     return mask
 
 
-cap = cv2.VideoCapture('./Janken2.mp4')
+cap = cv2.VideoCapture('./janken2.mp4')
 history = deque(maxlen=11)
 while cap.isOpened():
     ret, frame = cap.read()
