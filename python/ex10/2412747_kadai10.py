@@ -26,6 +26,7 @@ while cap.isOpened():
 
         if cv2.contourArea(cnt) > 3000:
             hand = np.zeros(mask.shape, np.uint8)
+            cv2.drawContours(hand, [cnt], -1, 255, -1)
             dist = cv2.distanceTransform(hand, cv2.DIST_L2, 5)
             _, palm_r, _, palm_c = cv2.minMaxLoc(dist)
             px, py = palm_c[0], palm_c[1]
