@@ -29,13 +29,11 @@ def analyze_hand(cnt, shape):
     dist = cv2.distanceTransform(hand, cv2.DIST_L2, 5)
     _, palm_r, _, palm_c = cv2.minMaxLoc(dist)
     px, py = palm_c
-
     pts = cnt.reshape(-1, 2)
     upper = pts[pts[:, 1] < py]
     reach = np.sqrt(((upper - [px, py]) ** 2).sum(axis=1)).max() \
         if len(upper) > 0 else palm_r
     ext = reach / (palm_r + 1e-6)
-
     valleys = 0
     hull = cv2.convexHull(cnt, returnPoints=False)
     if hull is not None and len(hull) > 3:
@@ -74,33 +72,26 @@ def classify(cnt, shape):
 cap = cv2.VideoCapture(0)
 history = deque(maxlen=7)
 last = None
-
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
-
     mask = skin_mask(frame)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     gesture = None
     if len(contours) > 0:
         cnt = max(contours, key=cv2.contourArea)
         gesture = classify(cnt, mask.shape)
-        if gesture is not None:
-            cv2.drawContours(frame, [cnt], -1, (0, 255, 0), 2)
-
     history.append(gesture)
     valid = [g for g in history if g is not None]
     if len(valid) == 0:
         stable = None
     else:
         stable = max(set(valid), key=valid.count)
-
     cmd = CMD.get(stable, "s")
     if cmd != last:
         ser.write(bytes(cmd, 'utf-8'))
         last = cmd
-
     cv2.imshow("frame", frame)
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break

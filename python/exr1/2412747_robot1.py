@@ -39,24 +39,19 @@ def decide(area, cx, w):
 
 cap = cv2.VideoCapture(0)
 last = None
-
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
     h, w = frame.shape[:2]
-
     mask = red_mask(frame)
     mu = cv2.moments(mask, True)
     area = mu["m00"]
     cx = int(mu["m10"] / area) if area > 0 else -1
-
     cmd = decide(area, cx, w)
-
     if cmd != last:
         ser.write(bytes(cmd, 'utf-8'))
         last = cmd
-
     cv2.imshow("frame", frame)
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break
