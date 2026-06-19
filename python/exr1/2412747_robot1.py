@@ -7,8 +7,8 @@ PORT = '/dev/ttyACM0'
 ser = serial.Serial(PORT, 38400)
 time.sleep(1)
 AREA_MIN = 1000
-TARGET_AREA = 15000
-MARGIN = 5000
+TARGET_AREA = 50000
+MARGIN = 10000
 SIDE = 0.15
 
 
@@ -29,9 +29,9 @@ def decide(area, cx, w):
         return 'l'
     if cx > w * 0.5 + w * SIDE:
         return 'r'
-    if area < TARGET_AREA - MARGIN:
+    if area > TARGET_AREA - MARGIN:
         return 'f'
-    if area > TARGET_AREA + MARGIN:
+    if area < TARGET_AREA + MARGIN:
         return 'b'
     return 's'
 
