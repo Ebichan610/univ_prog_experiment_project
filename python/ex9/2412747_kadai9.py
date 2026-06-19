@@ -24,7 +24,7 @@ while cap.isOpened():
         cnt = max(contours, key=cv2.contourArea)
         if cv2.contourArea(cnt) > 10000:
             m = cv2.moments(cnt)
-            cy = m["m01"] / m["m00"]
+            cy = m["m01"] / m["m00"] -10
             hull = cv2.convexHull(cnt, returnPoints=False)
             valleys = 0
 
