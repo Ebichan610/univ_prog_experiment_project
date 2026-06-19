@@ -39,7 +39,7 @@ knn.train(train_x, cv2.ml.ROW_SAMPLE, train_y)
 sample_paths = glob.glob(os.path.join(SAMPLE_DIR, "*.png"))
 for path in sample_paths:
     gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    x = preprocess(gray).reshape(1, -1)
+    x = gray.reshape(1, -1).astype(np.float32)
     _, result, _, _ = knn.findNearest(x, k=5)
     digit = int(result[0, 0])
     print(os.path.basename(path), "→", digit)

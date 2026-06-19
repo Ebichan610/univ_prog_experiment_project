@@ -26,8 +26,6 @@ def deskew(img):
 
 
 def preprocess(gray):
-    if gray.mean() > 127:
-        gray = 255 - gray
     gray = cv2.resize(gray, (28, 28))
     return deskew(gray)
 
@@ -48,21 +46,18 @@ def load_labeled(base):
 
 train_x, train_y = load_labeled(TRAIN_DIR)
 print("学習画像:", len(train_x), "枚")
-
 svm = cv2.ml.SVM_create()
 svm.setType(cv2.ml.SVM_C_SVC)
 svm.setKernel(cv2.ml.SVM_RBF)
 svm.setC(12.5)
 svm.setGamma(0.50625)
 svm.train(train_x, cv2.ml.ROW_SAMPLE, train_y)
-
 sample_paths = glob.glob(os.path.join(SAMPLE_DIR, "*.png"))
 for path in sample_paths:
     gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     x = feature(gray).reshape(1, -1)
     digit = int(svm.predict(x)[1][0, 0])
     print(os.path.basename(path), "→", digit)
-
     img = cv2.imread(path)
     disp = cv2.resize(img, (280, 280), interpolation=cv2.INTER_NEAREST)
     cv2.imshow("result", disp)
