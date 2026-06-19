@@ -52,10 +52,8 @@ def analyze_hand(cnt, shape):
                 a = np.linalg.norm(end - start)
                 b = np.linalg.norm(far - start)
                 c = np.linalg.norm(far - end)
-                angle = np.arccos((b ** 2 + c ** 2 - a ** 2)
-                                  / (2 * b * c + 1e-6))
-                if dd / 256.0 > palm_r * DEPTH_RATIO and angle < np.pi * 5 / 9 \
-                        and far[1] < py:
+                angle = np.arccos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c + 1e-6))
+                if dd / 256.0 > palm_r * DEPTH_RATIO and angle < np.pi * 5 / 9 and far[1] < py:
                     valleys += 1
     return ext, valleys
 
@@ -83,8 +81,7 @@ while cap.isOpened():
         break
 
     mask = skin_mask(frame)
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-                                   cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     gesture = None
     if len(contours) > 0:
         cnt = max(contours, key=cv2.contourArea)
@@ -104,9 +101,6 @@ while cap.isOpened():
         ser.write(bytes(cmd, 'utf-8'))
         last = cmd
 
-    text = (stable if stable else "手なし") + " -> " + cmd
-    cv2.putText(frame, text, (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
-                1.0, (0, 0, 255), 2)
     cv2.imshow("frame", frame)
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break
