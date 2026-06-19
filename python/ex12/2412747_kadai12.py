@@ -16,22 +16,8 @@ def label_from_name(name):
     return int(m.group(1))
 
 
-def deskew(img):
-    m = cv2.moments(img)
-    if abs(m['mu02']) < 1e-2:
-        return img.copy()
-    skew = m['mu11'] / m['mu02']
-    M = np.float32([[1, skew, -0.5 * 28 * skew], [0, 1, 0]])
-    return cv2.warpAffine(img, M, (28, 28), flags=cv2.WARP_INVERSE_MAP | cv2.INTER_LINEAR)
-
-
-def preprocess(gray):
-    gray = cv2.resize(gray, (28, 28))
-    return deskew(gray)
-
-
 def feature(gray):
-    return hog.compute(preprocess(gray)).ravel()
+    return hog.compute(cv2.resize(gray, (28, 28))).ravel()
 
 
 def load_labeled(base):
@@ -50,7 +36,7 @@ svm = cv2.ml.SVM_create()
 svm.setType(cv2.ml.SVM_C_SVC)
 svm.setKernel(cv2.ml.SVM_RBF)
 svm.setC(12.5)
-svm.setGamma(0.50625)
+svm.setGamma(0.5)
 svm.train(train_x, cv2.ml.ROW_SAMPLE, train_y)
 sample_paths = glob.glob(os.path.join(SAMPLE_DIR, "*.png"))
 for path in sample_paths:

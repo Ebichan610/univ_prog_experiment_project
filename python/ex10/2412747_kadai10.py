@@ -52,8 +52,7 @@ while cap.isOpened():
                     a = np.linalg.norm(end - start)
                     b = np.linalg.norm(far - start)
                     c = np.linalg.norm(far - end)
-                    angle = np.arccos((b ** 2 + c ** 2 - a ** 2)
-                                      / (2 * b * c + 1e-6))
+                    angle = np.arccos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c + 1e-6))
                     depth = dd / 256.0
                     if depth > palm_r * 0.5 and angle < np.pi * 5 / 9 and far[1] < py:
                         valleys += 1
@@ -65,9 +64,7 @@ while cap.isOpened():
                 result = "チョキ"
     if result is not None:
         history.append(result)
-    display = max(set(history), key=history.count) if len(history) > 0 \
-        else ""
-
+    display = max(set(history), key=history.count)
     print(display)
     cv2.imshow("frame", frame)
     if cv2.waitKey(25) & 0xFF == ord('q'):

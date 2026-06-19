@@ -27,20 +27,19 @@ while cap.isOpened():
             cy = m["m01"] / m["m00"]
             hull = cv2.convexHull(cnt, returnPoints=False)
             valleys = 0
-            if hull is not None and len(hull) > 3:
-                defects = cv2.convexityDefects(cnt, hull)
-                if defects is not None:
-                    for i in range(defects.shape[0]):
-                        s, e, f, d = defects[i, 0]
-                        start = cnt[s][0]
-                        end = cnt[e][0]
-                        far = cnt[f][0]
-                        a = np.linalg.norm(end - start)
-                        b = np.linalg.norm(far - start)
-                        c = np.linalg.norm(far - end)
-                        angle = np.arccos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c + 1e-6))
-                        if d > 10000 and angle < np.pi * 2 / 3 and far[1] < cy:
-                            valleys += 1
+
+            defects = cv2.convexityDefects(cnt, hull)
+            for i in range(defects.shape[0]):
+                s, e, f, d = defects[i, 0]
+                start = cnt[s][0]
+                end = cnt[e][0]
+                far = cnt[f][0]
+                a = np.linalg.norm(end - start)
+                b = np.linalg.norm(far - start)
+                c = np.linalg.norm(far - end)
+                angle = np.arccos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c + 1e-6))
+                if d > 10000 and angle < np.pi * 2 / 3 and far[1] < cy:
+                    valleys += 1
             if valleys == 0:
                 result = "グー"
             elif valleys == 1:
